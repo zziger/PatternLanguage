@@ -20,6 +20,9 @@ namespace pl::core::ast {
         evaluator->alignToByte();
         auto pattern = std::make_shared<ptrn::PatternStruct>(evaluator, evaluator->getReadOffset(), 0, getLocation().line);
 
+        if (!this->m_name.empty())
+            pattern->setTypeName(this->m_name);
+
         auto startOffset = evaluator->getReadOffset();
         std::vector<std::shared_ptr<ptrn::Pattern>> memberPatterns;
 

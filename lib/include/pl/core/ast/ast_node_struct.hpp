@@ -23,9 +23,13 @@ namespace pl::core::ast {
         [[nodiscard]] const std::vector<std::shared_ptr<ASTNode>> &getInheritance() const { return this->m_inheritance; }
         void addInheritance(std::shared_ptr<ASTNode> &&node) { this->m_inheritance.push_back(std::move(node)); }
 
+        [[nodiscard]] const std::string &getName() const { return this->m_name; }
+        void setName(const std::string &name) { this->m_name = name; }
+
     private:
         std::vector<std::shared_ptr<ASTNode>> m_members;
         std::vector<std::shared_ptr<ASTNode>> m_inheritance;
+        std::string m_name;
     };
 
 }
