@@ -22,6 +22,7 @@ namespace pl::cli::sub {
         static bool allowDangerousFunctions = false;
         static bool metaInformation = false;
         static u64 baseAddress = 0x00;
+        static u64 section = 0x00;
 
         auto subcommand = app->add_subcommand("format", "Executes the given pattern on the given file, and output the pattern data in the wanted format");
 
@@ -32,6 +33,7 @@ namespace pl::cli::sub {
         subcommand->add_option("-I,--includes", includePaths, "Include file paths")->take_all()->check(CLI::ExistingDirectory);
         subcommand->add_option("-D,--define", defines, "Define a preprocessor macro")->take_all();
         subcommand->add_option("-b,--base", baseAddress, "Base address")->default_val(0x00);
+        subcommand->add_option("-s,--section", section, "Section ID to format")->default_val(0x00);
         subcommand->add_flag("-v,--verbose", verbose, "Verbose output")->default_val(false);
         subcommand->add_flag("-d,--dangerous", allowDangerousFunctions, "Allow dangerous functions")->default_val(false);
         subcommand->add_flag("-m,--metadata", metaInformation, "Include meta type information")->default_val(0x00);
@@ -110,7 +112,7 @@ namespace pl::cli::sub {
             formatter->enableMetaInformation(metaInformation);
 
             // Call selected formatter to format the results
-            auto result = formatter->format(runtime);
+            auto result = formatter->format(runtime, section);
 
             // Write results to output file
             wolv::io::File outputFile(outputFilePath, wolv::io::File::Mode::Create);

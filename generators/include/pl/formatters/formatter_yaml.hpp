@@ -131,11 +131,11 @@ namespace pl::gen::fmt {
 
         [[nodiscard]] std::string getFileExtension() const override { return "yml"; }
 
-        [[nodiscard]] std::vector<u8> format(const PatternLanguage &runtime) override {
+        [[nodiscard]] std::vector<u8> format(const PatternLanguage &runtime, u64 section) override {
             YamlPatternVisitor visitor;
             visitor.enableMetaInformation(this->isMetaInformationEnabled());
 
-            for (const auto& pattern : runtime.getPatterns()) {
+            for (const auto& pattern : runtime.getPatterns(section)) {
                 pattern->accept(visitor);
             }
 

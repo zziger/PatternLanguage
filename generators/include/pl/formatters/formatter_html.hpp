@@ -11,8 +11,8 @@ namespace pl::gen::fmt {
 
         [[nodiscard]] std::string getFileExtension() const override { return "html"; }
 
-        [[nodiscard]] std::vector<u8> format(const PatternLanguage &runtime) override {
-            auto result = generateHtml(runtime);
+        [[nodiscard]] std::vector<u8> format(const PatternLanguage &runtime, u64 section) override {
+            auto result = generateHtml(runtime, section);
 
             return { result.begin(), result.end() };
         }
@@ -44,11 +44,11 @@ namespace pl::gen::fmt {
             return ::fmt::format(R"html(<br><span class="pattern_language_tooltip" style="background-color: #{:08X}"><div class="pattern_language_tooltip_text">{}</div></span>)html", (hlp::changeEndianess(patterns.front()->getColor(), std::endian::big) | 0x000000FF) & 0xAFAFAFFF, content);
         }
 
-        static std::string generateCell(u64 address, const PatternLanguage &runtime) {
-            const auto patterns = runtime.getPatternsAtAddress(address);
+        static std::string generateCell(u64 address, const PatternLanguage &runtime, const u64 section) {
+            const auto patterns = runtime.getPatternsAtAddress(address, section);
 
             u8 byte = 0;
-            runtime.getInternals().evaluator->readData(address, &byte, sizeof(byte), ptrn::Pattern::MainSectionId);
+            runtime.getInternals().evaluator->readData(address, &byte, sizeof(byte), section);
 
             bool isHighlighted = false;
             for (const auto pattern : patterns) {
@@ -64,14 +64,14 @@ namespace pl::gen::fmt {
                                  );
         }
 
-        static std::string generateRow(u64 address, const PatternLanguage &runtime) {
+        static std::string generateRow(u64 address, const PatternLanguage &runtime, const u64 section) {
             std::string result;
 
             result += R"html(<div class="pattern_language_row">)html";
             result += ::fmt::format(R"html(<div class="pattern_language_address">{:08X}</div>)html", address);
 
             for (u64 i = address; i < runtime.getInternals().evaluator->getDataSize() && i < address + 0x10; i++) {
-                result += generateCell(i, runtime);
+                result += generateCell(i, runtime, section);
 
                 if ((i & 0x0F) == 0x07)
                     result += R"html(<div class="pattern_language_cell">&nbsp;</div>)html";
@@ -82,13 +82,13 @@ namespace pl::gen::fmt {
             return result;
         }
 
-        static std::string generateHtml(const PatternLanguage &runtime) {
+        static std::string generateHtml(const PatternLanguage &runtime, const u64 section) {
             std::string rows;
 
             auto &evaluator = runtime.getInternals().evaluator;
 
             for (u64 i = evaluator->getDataBaseAddress(); i < evaluator->getDataSize(); i += 0x10) {
-                rows += generateRow(i, runtime);
+                rows += generateRow(i, runtime, section);
             }
 
             return R"html(

@@ -150,12 +150,12 @@ namespace pl::gen::fmt {
 
         [[nodiscard]] std::string getFileExtension() const override { return "json"; }
 
-        [[nodiscard]] std::vector<u8> format(const PatternLanguage &runtime) override {
+        [[nodiscard]] std::vector<u8> format(const PatternLanguage &runtime, u64 section) override {
             JsonPatternVisitor visitor;
             visitor.enableMetaInformation(this->isMetaInformationEnabled());
 
             visitor.pushIndent();
-            for (const auto& pattern : runtime.getPatterns()) {
+            for (const auto& pattern : runtime.getPatterns(section)) {
                 pattern->accept(visitor);
             }
             visitor.popIndent();

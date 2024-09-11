@@ -64,7 +64,7 @@ namespace pl::gen::fmt {
         }
 
         [[nodiscard]] virtual std::string getFileExtension() const = 0;
-        [[nodiscard]] virtual std::vector<u8> format(const PatternLanguage &runtime) = 0;
+        [[nodiscard]] virtual std::vector<u8> format(const PatternLanguage &runtime, u64 section) = 0;
 
         void enableMetaInformation(bool enable) { this->m_metaInformation = enable; }
         [[nodiscard]] bool isMetaInformationEnabled() const { return this->m_metaInformation; }
