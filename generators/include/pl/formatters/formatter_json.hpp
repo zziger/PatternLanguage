@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pl/formatters/formatter.hpp>
+#include <sstream>
 
 namespace pl::gen::fmt {
 
@@ -60,11 +61,20 @@ namespace pl::gen::fmt {
         void formatString(const pl::ptrn::Pattern *pattern) {
             if (pattern->getVisibility() == ptrn::Visibility::Hidden) return;
 
-            const auto string = pattern->toString();
+            auto string = pattern->toString();
+            if (pattern->getTypeName() == "std::mem::Bytes") {
+                auto value = pattern->getValue().toPattern()->getBytes();
+                std::stringstream ss;
+                for (u8 byte : value) {
+                    ss << std::format("{:02X} ", byte);
+                }
+                string = ss.str();
+            }
+
 
             std::string result;
             for (char c : string) {
-                if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~')
+                if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~' || c == ' ' || c == ':')
                     result += c;
                 else
                     result += ::fmt::format("%{:02X}", c);
